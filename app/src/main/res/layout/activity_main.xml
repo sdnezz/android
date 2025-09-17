@@ -24,10 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:rowCount="4"
         tools:itemCount="16"
-        tools:listitem="@layout/item_tile">
-
-
-    </androidx.gridlayout.widget.GridLayout>
+        tools:listitem="@layout/item_tile"/>
 
     <Button
         android:id="@+id/button"
