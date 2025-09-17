@@ -27,7 +27,7 @@
         tools:listitem="@layout/item_tile"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_start"
         android:layout_width="365dp"
         android:layout_height="58dp"
         android:background="@drawable/tile_default_background"
@@ -55,17 +55,16 @@
         android:layout_margin="4dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/button_start"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gridLayout_gameBoard"
-        app:layout_constraintVertical_bias="0.881">
+        app:layout_constraintVertical_bias="1.0">
 
         <ToggleButton
             android:id="@+id/toggleButton"
-            android:layout_width="170dp"
-            android:layout_height="57dp"
+            android:layout_width="175dp"
+            android:layout_height="55dp"
             android:layout_margin="10dp"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
@@ -80,8 +79,8 @@
 
         <Button
             android:id="@+id/button5"
-            android:layout_width="174dp"
-            android:layout_height="56dp"
+            android:layout_width="175dp"
+            android:layout_height="55dp"
             android:layout_margin="10dp"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
