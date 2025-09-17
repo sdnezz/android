@@ -5,6 +5,100 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1D1D1D"
+    android:foreground="@drawable/tile_ripple_effect"
     tools:context=".MainActivity">
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayout_gameBoard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        android:background="@drawable/round_angle_8"
+        app:columnCount="4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rowCount="4"
+        tools:itemCount="16"
+        tools:listitem="@layout/item_tile">
+
+
+    </androidx.gridlayout.widget.GridLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="365dp"
+        android:layout_height="58dp"
+        android:background="@drawable/tile_default_background"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:foreground="@drawable/tile_ripple_effect"
+        android:text="Начать заново"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#373737"
+        android:textColorHighlight="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:backgroundTint="#FFC107"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.953" />
+
+    <LinearLayout
+        android:layout_width="367dp"
+        android:layout_height="67dp"
+        android:layout_margin="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout_gameBoard"
+        app:layout_constraintVertical_bias="0.881">
+
+        <ToggleButton
+            android:id="@+id/toggleButton"
+            android:layout_width="170dp"
+            android:layout_height="57dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/tile_default_background"
+            android:clickable="true"
+            android:foreground="@drawable/tile_ripple_effect"
+            android:text="ToggleButton"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#FFC107"
+            android:textOff="Пауза"
+            android:textOn="Возобновить"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="174dp"
+            android:layout_height="56dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/tile_default_background"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:foreground="@drawable/tile_ripple_effect"
+            android:text="Достижения"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#FFC107"
+            android:textColorHighlight="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:textStyle="bold"
+            android:typeface="normal"
+            app:backgroundTint="@null" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
