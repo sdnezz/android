@@ -50,6 +50,7 @@
         app:layout_constraintVertical_bias="0.953" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="367dp"
         android:layout_height="67dp"
         android:layout_margin="4dp"
@@ -96,5 +97,32 @@
             android:typeface="normal"
             app:backgroundTint="@null" />
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="365dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout_gameBoard">
+
+        <TextView
+            android:id="@+id/textView_timer"
+            android:layout_width="103dp"
+            android:layout_height="30dp"
+            android:background="#00FFF7F7"
+            android:text="00:00:00"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#9E9E9E"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.057"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.518" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

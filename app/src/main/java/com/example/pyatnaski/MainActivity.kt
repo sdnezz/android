@@ -1,52 +1,103 @@
 package com.example.pyatnaski // Или ваш актуальный пакет
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button // <--- ИЗМЕНИТЬ ЗДЕСЬ
+import android.widget.Button
+import android.widget.TextView // Для таймера
 import androidx.appcompat.app.AppCompatActivity
 import androidx.gridlayout.widget.GridLayout
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gameBoardLayout: GridLayout
-    // Используем android.widget.Button, так как мы работаем с традиционными Views
-    private val tiles = mutableListOf<Button>() // <--- ИЗМЕНИТЬ ЗДЕСЬ
-    private var emptyTile: Button? = null // Переменная для пустой плитки
+    private val tiles = mutableListOf<Button>()
+    private var emptyTile: Button? = null
     private val TILE_COUNT = 4
+
+    private lateinit var startButton: Button
+    private lateinit var timerTextView: TextView
+
+    private var timerSeconds = 0
+    private var isTimerRunning = false
+    private var hasGameStartedSinceShuffle = false // Флаг, что игра началась (было первое движение)
+    private val timerHandler = Handler(Looper.getMainLooper())
+    private val timerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            timerSeconds++
+            val hours = timerSeconds / 3600
+            val minutes = (timerSeconds % 3600) / 60
+            val secs = timerSeconds % 60
+            timerTextView.text = String.format("%02d:%02d:%02d", hours, minutes, secs)
+            if (isTimerRunning) {
+                timerHandler.postDelayed(this, 1000)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         gameBoardLayout = findViewById(R.id.gridLayout_gameBoard)
+        startButton = findViewById(R.id.button_start) // Убедитесь, что ID правильный
+        timerTextView = findViewById(R.id.textView_timer) // Убедитесь, что ID правильный
 
         if (::gameBoardLayout.isInitialized) {
-            initializeBoard()
+            initializeBoard() // Первоначальная инициализация (можно сразу перемешать)
         } else {
             Log.e("MainActivity", "GridLayout not found!")
         }
+
+        startButton.setOnClickListener {
+            shuffleAndResetGame()
+        }
+        // Устанавливаем начальное значение таймера
+        timerTextView.text = "00:00:00"
     }
+
+    private fun shuffleAndResetGame() {
+        Log.d("MainActivity", "Shuffle and reset requested.")
+        // 1. Остановить и сбросить таймер
+        stopTimer()
+        timerSeconds = 0
+        timerTextView.text = "00:00:00"
+        hasGameStartedSinceShuffle = false // Сбрасываем флаг начала игры
+
+        // 2. Перемешать доску
+        initializeBoard() // Это уже включает перемешивание и расстановку
+
+        // Можно добавить проверку на решаемость здесь, если необходимо
+        // checkIfSolvableAndFix()
+    }
+
 
     private fun initializeBoard() {
         gameBoardLayout.removeAllViews()
         tiles.clear()
-        emptyTile = null // Сбрасываем перед инициализацией
+        emptyTile = null
 
-        val numbers = (1.. (TILE_COUNT * TILE_COUNT - 1)).toMutableList() // Числа от 1 до 15 для поля 4x4
-        numbers.shuffle()
-        numbers.add(0) // Добавляем 0 для обозначения пустой плитки (или можно последний элемент сделать пустым)
+        val numbers = (1..(TILE_COUNT * TILE_COUNT - 1)).toMutableList()
+        numbers.shuffle() // Перемешиваем числа
+        numbers.add(0) // 0 - пустая плитка
+
+        // Для теста можно начать с решенной доски, закомментировав shuffle и add(0) выше
+        // и раскомментировав это:
+        // val numbers = (1..(TILE_COUNT * TILE_COUNT - 1)).toMutableList()
+        // numbers.add(0) // Пустая в конце для решенного состояния
+
 
         val inflater = LayoutInflater.from(this)
 
         for (i in 0 until TILE_COUNT * TILE_COUNT) {
             val row = i / TILE_COUNT
             val col = i % TILE_COUNT
-
             val tileValue = numbers[i]
-
             val tileView = inflater.inflate(R.layout.item_tile, gameBoardLayout, false) as Button
-            // Установка LayoutParams (как вы делали ранее, с отступами и весами)
+
             val params = GridLayout.LayoutParams().apply {
                 rowSpec = GridLayout.spec(row, 1f)
                 columnSpec = GridLayout.spec(col, 1f)
@@ -58,11 +109,9 @@ class MainActivity : AppCompatActivity() {
             }
             tileView.layoutParams = params
 
-            if (tileValue == 0) { // Это пустая плитка
-                tileView.text = "" // Пустой текст
-                tileView.visibility = View.INVISIBLE // Делаем ее невидимой, но она занимает место
-                // или можно задать другой фон/стиль для пустой плитки
-                // tileView.setBackgroundColor(Color.LTGRAY) // Пример
+            if (tileValue == 0) {
+                tileView.text = ""
+                tileView.visibility = View.INVISIBLE
                 emptyTile = tileView
             } else {
                 tileView.text = tileValue.toString()
@@ -71,28 +120,24 @@ class MainActivity : AppCompatActivity() {
 
             tileView.setOnClickListener { clickedView ->
                 if (clickedView is Button && emptyTile != null) {
-                    // Только непустые плитки могут инициировать ход
                     if (clickedView.visibility == View.VISIBLE) {
                         onTileClick(clickedView, emptyTile!!)
                     }
                 }
             }
-
             gameBoardLayout.addView(tileView)
             tiles.add(tileView)
         }
 
-        // Дополнительная проверка, на случай если 0 не попался (хотя должен при такой логике)
         if (emptyTile == null && tiles.isNotEmpty()) {
-            // Если по какой-то причине пустая плитка не была назначена,
-            // сделаем последнюю плитку пустой (аварийный вариант)
             emptyTile = tiles.last()
             emptyTile?.text = ""
             emptyTile?.visibility = View.INVISIBLE
-            Log.w("MainActivity", "Empty tile was not set, using last tile as empty.")
+            Log.w("MainActivity", "Backup: Empty tile was not set, using last tile as empty.")
         }
-        Log.d("MainActivity", "Board initialized. Empty tile: ${emptyTile?.let { getTilePosition(it) }}")
+        Log.d("MainActivity", "Board initialized. Empty: ${getTilePosition(emptyTile!!)}")
     }
+
     private fun onTileClick(clickedTile: Button, currentEmptyTile: Button) {
         val clickedPos = getTilePosition(clickedTile)
         val emptyPos = getTilePosition(currentEmptyTile)
@@ -102,9 +147,13 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Проверяем, являются ли плитки соседями (не по диагонали)
         if (isAdjacent(clickedPos, emptyPos)) {
-            // Меняем местами текст и видимость
+            // Если это первое движение после перемешивания и таймер не запущен
+            if (!hasGameStartedSinceShuffle && !isTimerRunning) {
+                startTimer()
+                hasGameStartedSinceShuffle = true
+            }
+
             val tempText = clickedTile.text
             clickedTile.text = ""
             currentEmptyTile.text = tempText
@@ -112,41 +161,62 @@ class MainActivity : AppCompatActivity() {
             clickedTile.visibility = View.INVISIBLE
             currentEmptyTile.visibility = View.VISIBLE
 
-            // Обновляем ссылку на пустую плитку
-            emptyTile = clickedTile // Теперь нажатая плитка стала пустой
+            emptyTile = clickedTile // Обновляем пустую плитку
 
-            Log.d("MainActivity", "Moved tile ${currentEmptyTile.text} to empty. New empty: ${getTilePosition(emptyTile!!)}")
+            Log.d("MainActivity", "Moved tile ${currentEmptyTile.text}. New empty: ${getTilePosition(emptyTile!!)}")
 
-            // Тут можно добавить проверку на победу
-            // checkIfGameWon()
+             checkIfGameWon() // Проверка на победу
         } else {
-            Log.d("MainActivity", "Tile ${clickedTile.text} at $clickedPos is not adjacent to empty at $emptyPos")
+            Log.d("MainActivity", "Tile ${clickedTile.text} at $clickedPos not adjacent to empty $emptyPos")
         }
     }
 
-    // Вспомогательная функция для получения позиции (row, col) плитки в GridLayout
-    private fun getTilePosition(tile: Button): Pair<Int, Int>? {
-        val params = tile.layoutParams as? GridLayout.LayoutParams ?: return null
-        // GridLayout.Spec не дает прямого доступа к row/column после установки,
-        // но мы можем найти индекс в списке children и рассчитать
-        val index = gameBoardLayout.indexOfChild(tile)
-        if (index == -1) return null
-        val row = index / TILE_COUNT
-        val col = index % TILE_COUNT
-        return Pair(row, col)
+    private fun startTimer() {
+        if (!isTimerRunning) {
+            isTimerRunning = true
+            timerHandler.postDelayed(timerRunnable, 1000) // Запускаем Runnable
+            Log.d("MainActivity", "Timer started.")
+        }
     }
 
+    private fun stopTimer() {
+        if (isTimerRunning) {
+            isTimerRunning = false
+            timerHandler.removeCallbacks(timerRunnable) // Останавливаем Runnable
+            Log.d("MainActivity", "Timer stopped.")
+        }
+    }
 
-    // Вспомогательная функция для проверки соседства
+    private fun getTilePosition(tile: Button): Pair<Int, Int>? {
+        val index = gameBoardLayout.indexOfChild(tile)
+        if (index == -1) return null
+        return Pair(index / TILE_COUNT, index % TILE_COUNT)
+    }
+
     private fun isAdjacent(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
-        val (row1, col1) = pos1
-        val (row2, col2) = pos2
+        val (r1, c1) = pos1
+        val (r2, c2) = pos2
+        return (kotlin.math.abs(r1 - r2) == 1 && c1 == c2) || (kotlin.math.abs(c1 - c2) == 1 && r1 == r2)
+    }
 
-        // Разница по строкам и столбцам
-        val rowDiff = Math.abs(row1 - row2)
-        val colDiff = Math.abs(col1 - col2)
+    // Не забудьте остановить таймер, если Activity уничтожается, чтобы избежать утечек
+    override fun onDestroy() {
+        super.onDestroy()
+        stopTimer() // или timerHandler.removeCallbacks(timerRunnable)
+    }
 
-        // Соседние, если одна из разниц равна 1, а другая 0 (не по диагонали)
-        return (rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1)
+    // Можно добавить функцию проверки на победу
+    private fun checkIfGameWon() {
+        for (i in 0 until tiles.size - 1) { // Проверяем все плитки, кроме последней (пустой)
+            val tile = tiles[i]
+            if (tile.visibility == View.INVISIBLE || tile.text.toString() != (i + 1).toString()) {
+                return // Игра не закончена
+            }
+        }
+        // Если дошли сюда, все плитки на своих местах
+        stopTimer()
+        Log.d("MainActivity", "Congratulations! You won in $timerSeconds seconds!")
+        // Показать сообщение о победе
+        // Можно, например, сделать кнопку Start неактивной или изменить ее текст на "Play Again?"
     }
 }
