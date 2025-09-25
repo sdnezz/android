@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:rowCount="4"
         tools:itemCount="16"
-        tools:listitem="@layout/item_tile"/>
+        tools:listitem="@layout/item_tile" />
 
     <Button
         android:id="@+id/button_start"
@@ -63,7 +63,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <ToggleButton
-            android:id="@+id/toggleButton"
+            android:id="@+id/toggleButton_pause"
             android:layout_width="175dp"
             android:layout_height="55dp"
             android:layout_margin="10dp"
@@ -79,7 +79,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/button_achievements"
             android:layout_width="175dp"
             android:layout_height="55dp"
             android:layout_margin="10dp"
@@ -123,6 +123,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.518" />
+
+        <TextView
+            android:id="@+id/textView_steps"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:background="#00FFF7F7"
+            android:text="Шагов: 1000"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#9E9E9E"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.938"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

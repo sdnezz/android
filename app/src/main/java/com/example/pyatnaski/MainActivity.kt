@@ -1,4 +1,4 @@
-package com.example.pyatnaski // Или ваш актуальный пакет
+package com.example.pyatnaski
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,7 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import android.widget.TextView // Для таймера
+import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.gridlayout.widget.GridLayout
 
@@ -19,11 +23,11 @@ class MainActivity : AppCompatActivity() {
     private val TILE_COUNT = 4
 
     private lateinit var startButton: Button
-    private lateinit var timerTextView: TextView
 
+    private lateinit var timerTextView: TextView
     private var timerSeconds = 0
     private var isTimerRunning = false
-    private var hasGameStartedSinceShuffle = false // Флаг, что игра началась (было первое движение)
+    private var hasGameStartedSinceShuffle = false
     private val timerHandler = Handler(Looper.getMainLooper())
     private val timerRunnable: Runnable = object : Runnable {
         override fun run() {
@@ -38,42 +42,64 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private lateinit var stepsTextView: TextView
+    private var stepCount = 0
+
+    private lateinit var pauseToggleButton: ToggleButton
+    private var isGamePaused = false
+
+    private val ACHIEVEMENTS_PREFS = "GameAchievementsPrefs"
+    private val KEY_ACH_SOLVED_ONCE = "ach_solved_once"
+    private val KEY_ACH_SOLVED_UNDER_5_MIN = "ach_solved_under_5_min"
+    private val KEY_ACH_100_STEPS = "ach_100_steps"
+    private val KEY_ACH_SOLVED_UNDER_50_STEPS = "ach_solved_under_50_steps"
+    private val KEY_ACH_SOLVED_UNDER_1_MIN = "ach_solved_under_50_steps"
+    private lateinit var achievementsButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        achievementsButton = findViewById(R.id.button_achievements)
+        achievementsButton.setOnClickListener {showAchievementsDialog()}
         gameBoardLayout = findViewById(R.id.gridLayout_gameBoard)
-        startButton = findViewById(R.id.button_start) // Убедитесь, что ID правильный
-        timerTextView = findViewById(R.id.textView_timer) // Убедитесь, что ID правильный
+        startButton = findViewById(R.id.button_start)
+        timerTextView = findViewById(R.id.textView_timer)
 
-        if (::gameBoardLayout.isInitialized) {
-            initializeBoard() // Первоначальная инициализация (можно сразу перемешать)
-        } else {
-            Log.e("MainActivity", "GridLayout not found!")
-        }
+        if (::gameBoardLayout.isInitialized) {initializeBoard()}
 
         startButton.setOnClickListener {
             shuffleAndResetGame()
         }
-        // Устанавливаем начальное значение таймера
         timerTextView.text = "00:00:00"
+
+        stepsTextView = findViewById(R.id.textView_steps)
+        updateStepsDisplay()
+
+        pauseToggleButton = findViewById(R.id.toggleButton_pause)
+        pauseToggleButton.setOnCheckedChangeListener { _, isChecked ->
+            isGamePaused = isChecked
+            if (isGamePaused) {
+                pauseGame()
+            } else {
+                resumeGame()
+            }
+        }
+        pauseToggleButton.isChecked = false
     }
 
     private fun shuffleAndResetGame() {
-        Log.d("MainActivity", "Shuffle and reset requested.")
-        // 1. Остановить и сбросить таймер
         stopTimer()
         timerSeconds = 0
         timerTextView.text = "00:00:00"
-        hasGameStartedSinceShuffle = false // Сбрасываем флаг начала игры
-
-        // 2. Перемешать доску
-        initializeBoard() // Это уже включает перемешивание и расстановку
-
-        // Можно добавить проверку на решаемость здесь, если необходимо
-        // checkIfSolvableAndFix()
+        hasGameStartedSinceShuffle = false
+        stepCount = 0
+        updateStepsDisplay()
+        initializeBoard()
     }
 
+    private fun updateStepsDisplay(){
+        stepsTextView.text = "Шагов: $stepCount"
+    }
 
     private fun initializeBoard() {
         gameBoardLayout.removeAllViews()
@@ -81,13 +107,8 @@ class MainActivity : AppCompatActivity() {
         emptyTile = null
 
         val numbers = (1..(TILE_COUNT * TILE_COUNT - 1)).toMutableList()
-        numbers.shuffle() // Перемешиваем числа
-        numbers.add(0) // 0 - пустая плитка
-
-        // Для теста можно начать с решенной доски, закомментировав shuffle и add(0) выше
-        // и раскомментировав это:
-        // val numbers = (1..(TILE_COUNT * TILE_COUNT - 1)).toMutableList()
-        // numbers.add(0) // Пустая в конце для решенного состояния
+        numbers.shuffle()
+        numbers.add(0)
 
 
         val inflater = LayoutInflater.from(this)
@@ -141,14 +162,15 @@ class MainActivity : AppCompatActivity() {
     private fun onTileClick(clickedTile: Button, currentEmptyTile: Button) {
         val clickedPos = getTilePosition(clickedTile)
         val emptyPos = getTilePosition(currentEmptyTile)
-
+        if (isGamePaused) {
+            return
+        }
         if (clickedPos == null || emptyPos == null) {
             Log.e("MainActivity", "Could not get tile positions.")
             return
         }
 
         if (isAdjacent(clickedPos, emptyPos)) {
-            // Если это первое движение после перемешивания и таймер не запущен
             if (!hasGameStartedSinceShuffle && !isTimerRunning) {
                 startTimer()
                 hasGameStartedSinceShuffle = true
@@ -161,20 +183,20 @@ class MainActivity : AppCompatActivity() {
             clickedTile.visibility = View.INVISIBLE
             currentEmptyTile.visibility = View.VISIBLE
 
-            emptyTile = clickedTile // Обновляем пустую плитку
+            emptyTile = clickedTile
 
-            Log.d("MainActivity", "Moved tile ${currentEmptyTile.text}. New empty: ${getTilePosition(emptyTile!!)}")
+            stepCount++
+            updateStepsDisplay()
+            checkAndUnlockStepAchievements()
 
-             checkIfGameWon() // Проверка на победу
-        } else {
-            Log.d("MainActivity", "Tile ${clickedTile.text} at $clickedPos not adjacent to empty $emptyPos")
+            checkIfGameWon()
         }
     }
 
     private fun startTimer() {
         if (!isTimerRunning) {
             isTimerRunning = true
-            timerHandler.postDelayed(timerRunnable, 1000) // Запускаем Runnable
+            timerHandler.postDelayed(timerRunnable, 1000)
             Log.d("MainActivity", "Timer started.")
         }
     }
@@ -182,8 +204,33 @@ class MainActivity : AppCompatActivity() {
     private fun stopTimer() {
         if (isTimerRunning) {
             isTimerRunning = false
-            timerHandler.removeCallbacks(timerRunnable) // Останавливаем Runnable
-            Log.d("MainActivity", "Timer stopped.")
+            timerHandler.removeCallbacks(timerRunnable)
+        }
+    }
+
+    private fun pauseGame() {
+        isGamePaused = true
+        if (isTimerRunning) {
+            timerHandler.removeCallbacks(timerRunnable)
+        }
+        setGameBoardEnabled(false)
+        Toast.makeText(this, "Игра приостановлена", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun resumeGame() {
+        isGamePaused = false
+        if (isTimerRunning && hasGameStartedSinceShuffle) { // Возобновляем таймер, если он был активен и игра уже началась
+            timerHandler.postDelayed(timerRunnable, 1000)
+        }
+        setGameBoardEnabled(true)
+        Toast.makeText(this, "Игра возобновлена", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setGameBoardEnabled(isEnabled: Boolean) {
+        for (i in 0 until gameBoardLayout.childCount) {
+            val child = gameBoardLayout.getChildAt(i)
+            child.isEnabled = isEnabled
+            child.isClickable = isEnabled
         }
     }
 
@@ -199,24 +246,85 @@ class MainActivity : AppCompatActivity() {
         return (kotlin.math.abs(r1 - r2) == 1 && c1 == c2) || (kotlin.math.abs(c1 - c2) == 1 && r1 == r2)
     }
 
-    // Не забудьте остановить таймер, если Activity уничтожается, чтобы избежать утечек
     override fun onDestroy() {
         super.onDestroy()
-        stopTimer() // или timerHandler.removeCallbacks(timerRunnable)
+        stopTimer()
     }
 
-    // Можно добавить функцию проверки на победу
     private fun checkIfGameWon() {
-        for (i in 0 until tiles.size - 1) { // Проверяем все плитки, кроме последней (пустой)
+        for (i in 0 until tiles.size - 1) {
             val tile = tiles[i]
             if (tile.visibility == View.INVISIBLE || tile.text.toString() != (i + 1).toString()) {
-                return // Игра не закончена
+                return
             }
         }
-        // Если дошли сюда, все плитки на своих местах
+        setGameBoardEnabled(false)
         stopTimer()
-        Log.d("MainActivity", "Congratulations! You won in $timerSeconds seconds!")
-        // Показать сообщение о победе
-        // Можно, например, сделать кнопку Start неактивной или изменить ее текст на "Play Again?"
+        onGameWon()
+    }
+    private fun onGameWon() {
+        stopTimer()
+
+        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        // 1. "Решить головоломку"
+        editor.putBoolean(KEY_ACH_SOLVED_ONCE, true)
+
+        // 2. "Решить не более чем за 5 минут" (5 минут = 300 секунд)
+        if (timerSeconds <= 300) {
+            editor.putBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, true)
+        }
+
+        // 3. "Решить не более чем за 50 шагов"
+        if (stepCount <= 50) {
+            editor.putBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, true)
+        }
+
+        editor.apply()
+        if(prefs.getBoolean(KEY_ACH_SOLVED_ONCE, true)
+            or prefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, true)
+            or prefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, true))
+        {
+            Toast.makeText(this, "Победа за ${timerSeconds} секунд и ${stepCount} шагов! Новые достижения!.", Toast.LENGTH_LONG).show()
+        }
+        else{Toast.makeText(this, "Победа за ${timerSeconds} секунд и ${stepCount} шагов!", Toast.LENGTH_LONG).show()}
+    }
+    private fun checkAndUnlockStepAchievements() {
+        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
+        if (stepCount >= 100 && !prefs.getBoolean(KEY_ACH_100_STEPS, false)) {
+            prefs.edit().putBoolean(KEY_ACH_100_STEPS, true).apply()
+            Toast.makeText(this, "Достижение: 100 шагов!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showAchievementsDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_achievements, null)
+        val listView = dialogView.findViewById<ListView>(R.id.listViewAchievements)
+        val closeButton = dialogView.findViewById<Button>(R.id.buttonCloseAchievements)
+
+        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
+        val achievementItems = mutableListOf<AchievementItem>()
+        achievementItems.add(AchievementItem("Решить головоломку", prefs.getBoolean(KEY_ACH_SOLVED_ONCE, false)))
+        achievementItems.add(AchievementItem("Решить не более чем за 5 минут", prefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, false)))
+        achievementItems.add(AchievementItem("Сделать 100 шагов", prefs.getBoolean(KEY_ACH_100_STEPS, false)))
+        achievementItems.add(AchievementItem("Решить не более чем за 50 шагов", prefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, false)))
+        // Добавьте другие достижения по аналогии
+
+        val adapter = AchievementsAdapter(this, achievementItems)
+        listView.adapter = adapter
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Для полупрозрачности и отсутствия стандартного фона диалога
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }
