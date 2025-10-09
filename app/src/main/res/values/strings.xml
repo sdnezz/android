@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">pyatnaski</string>
+    <string name="app_name">Fifteens</string>
+    <string name="toast_pause">Игра приостановлена</string>
+    <string name="toast_resume">Игра возобновлена</string>
+    <string name="toast_100_step">Достижение: 100 шагов!</string>
+    <string name="pause_game">Пауза</string>
+    <string name="resume_game">Возобновить</string>
+    <string name="steps_prefix">Шагов: %1$d</string>
+    <string name="restart">Начать заново</string>
+    <string name="achievements">Достижения</string>
+    <string name="ach_solved_once">Решить головоломку</string>
+    <string name="ach_solved_under_5_min">Решить не более чем за 5 минут</string>
+    <string name="ach_solved_under_50_steps">Решить не более чем за 50 шагов</string>
+    <string name="ach_100_steps">Решить не более чем за 100 шагов</string>
+    <string name="ach_solved_under_1_min">Решить не более чем за 1 минуту</string>
+    <string name="win_message">Победа за %1$d секунд и %2$d шагов!</string>
+    <string name="new_achievements">Новые достижения:</string>
+    <string name="close_button">Закрыть</string>
+    <string name="login">Вход</string>
+    <string name="registration">Регистрация</string>
+    <string name="email">Электронная почта</string>
+    <string name="password">Пароль</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="already_have_account">Уже есть аккаунт? Войти</string>
+    <string name="no_account_yet">Еще нет аккаунта? Зарегистрироваться</string>
+    <string name="error_empty_field">Поле не может быть пустым</string>
+    <string name="error_invalid_email">Неверный формат электронной почты</string>
+    <string name="error_password_too_short">Пароль должен быть не менее 6 символов</string>
+    <string name="error_passwords_do_not_match">Пароли не совпадают</string>
+    <string name="registration_successful">Регистрация прошла успешно!</string>
+    <string name="login_failed">Неверный email или пароль</string>
 </resources>

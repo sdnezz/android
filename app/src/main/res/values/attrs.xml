@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="mainBackgroundColor" format="color"/>
+    <attr name="tileBackgroundColor" format="color" />
+    <attr name="tileStrokeColor" format="color" />
+    <attr name="tileTextColor" format="color" />
+    <attr name="buttonTextColor" format="color" />
+    <attr name="secondaryTextColor" format="color" />
+    <attr name="dialogBackgroundColor" format="color" />
+    <attr name="dialogTextColor" format="color" />
+</resources>

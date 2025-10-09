@@ -1,22 +1,34 @@
 package com.example.pyatnaski
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.gridlayout.widget.GridLayout
+import com.bumptech.glide.Glide
+
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var themeSwitchButton: ImageButton
 
+    private lateinit var sharedPrefs: SharedPreferences
+//    private val PREFS_NAME = "ThemePrefs"
+//    private val KEY_THEME = "app_theme_mode"
+    private lateinit var languageButton: Button
+    private lateinit var thinking_gif: ImageView
     private lateinit var gameBoardLayout: GridLayout
     private val tiles = mutableListOf<Button>()
     private var emptyTile: Button? = null
@@ -53,12 +65,21 @@ class MainActivity : AppCompatActivity() {
     private val KEY_ACH_SOLVED_UNDER_5_MIN = "ach_solved_under_5_min"
     private val KEY_ACH_100_STEPS = "ach_100_steps"
     private val KEY_ACH_SOLVED_UNDER_50_STEPS = "ach_solved_under_50_steps"
-    private val KEY_ACH_SOLVED_UNDER_1_MIN = "ach_solved_under_50_steps"
+    private val KEY_ACH_SOLVED_UNDER_1_MIN = "ach_solved_under_1_min"
     private lateinit var achievementsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        LocaleHelper.loadLocale(this)
+
         super.onCreate(savedInstanceState)
+
+        sharedPrefs = getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
+        val currentTheme = sharedPrefs.getInt(AppPreferences.KEY_THEME, AppCompatDelegate.MODE_NIGHT_YES)
+        AppCompatDelegate.setDefaultNightMode(currentTheme)
+
         setContentView(R.layout.activity_main)
+
         achievementsButton = findViewById(R.id.button_achievements)
         achievementsButton.setOnClickListener {showAchievementsDialog()}
         gameBoardLayout = findViewById(R.id.gridLayout_gameBoard)
@@ -85,6 +106,53 @@ class MainActivity : AppCompatActivity() {
             }
         }
         pauseToggleButton.isChecked = false
+
+        thinking_gif = findViewById(R.id.imageView_gif)
+        Glide.with(this)
+            .asGif()
+            .load(R.drawable.thinking_gif)
+            .into(thinking_gif)
+
+        languageButton = findViewById(R.id.button_lang_switch)
+        languageButton.setOnClickListener {
+            changeLanguage()
+        }
+
+        themeSwitchButton = findViewById(R.id.day_night_switch)
+        updateThemeSwitchIcon()
+
+        themeSwitchButton.setOnClickListener {
+            toggleTheme()
+        }
+    }
+
+    private fun toggleTheme() {
+        val newTheme = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {AppCompatDelegate.MODE_NIGHT_NO
+        } else {
+            AppCompatDelegate.MODE_NIGHT_YES
+        }
+
+        sharedPrefs.edit().putInt(AppPreferences.KEY_THEME, newTheme).apply()
+
+        AppCompatDelegate.setDefaultNightMode(newTheme)
+    }
+
+    private fun updateThemeSwitchIcon() {
+        val isNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+        if (isNightMode) {
+            themeSwitchButton.setImageResource(R.drawable.night_mode)
+        } else {
+            themeSwitchButton.setImageResource(R.drawable.day_mode)
+        }
+    }
+
+    private fun changeLanguage(){
+        val currentLang = resources.configuration.locales.get(0).language
+        val newLang = if (currentLang == "ru") "en" else "ru"
+
+        LocaleHelper.setLocale(this, newLang)
+        recreate()
     }
 
     private fun shuffleAndResetGame() {
@@ -98,7 +166,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateStepsDisplay(){
-        stepsTextView.text = "Шагов: $stepCount"
+        stepsTextView.text = getString(R.string.steps_prefix, stepCount)
     }
 
     private fun initializeBoard() {
@@ -154,9 +222,7 @@ class MainActivity : AppCompatActivity() {
             emptyTile = tiles.last()
             emptyTile?.text = ""
             emptyTile?.visibility = View.INVISIBLE
-            Log.w("MainActivity", "Backup: Empty tile was not set, using last tile as empty.")
         }
-        Log.d("MainActivity", "Board initialized. Empty: ${getTilePosition(emptyTile!!)}")
     }
 
     private fun onTileClick(clickedTile: Button, currentEmptyTile: Button) {
@@ -166,7 +232,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
         if (clickedPos == null || emptyPos == null) {
-            Log.e("MainActivity", "Could not get tile positions.")
             return
         }
 
@@ -197,7 +262,6 @@ class MainActivity : AppCompatActivity() {
         if (!isTimerRunning) {
             isTimerRunning = true
             timerHandler.postDelayed(timerRunnable, 1000)
-            Log.d("MainActivity", "Timer started.")
         }
     }
 
@@ -214,7 +278,7 @@ class MainActivity : AppCompatActivity() {
             timerHandler.removeCallbacks(timerRunnable)
         }
         setGameBoardEnabled(false)
-        Toast.makeText(this, "Игра приостановлена", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.toast_pause), Toast.LENGTH_SHORT).show()
     }
 
     private fun resumeGame() {
@@ -223,7 +287,7 @@ class MainActivity : AppCompatActivity() {
             timerHandler.postDelayed(timerRunnable, 1000)
         }
         setGameBoardEnabled(true)
-        Toast.makeText(this, "Игра возобновлена", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.toast_resume), Toast.LENGTH_SHORT).show()
     }
 
     private fun setGameBoardEnabled(isEnabled: Boolean) {
@@ -265,36 +329,52 @@ class MainActivity : AppCompatActivity() {
     private fun onGameWon() {
         stopTimer()
 
-        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
-        val editor = prefs.edit()
+        val hadSolvedOnce = sharedPrefs.getBoolean(KEY_ACH_SOLVED_ONCE, false)
+        val hadSolvedUnder1Min = sharedPrefs.getBoolean(KEY_ACH_SOLVED_UNDER_1_MIN, false)
+        val hadSolvedUnder5Min = sharedPrefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, false)
+        val hadSolvedUnder50Steps = sharedPrefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, false)
 
-        // 1. "Решить головоломку"
+        val editor = sharedPrefs.edit()
         editor.putBoolean(KEY_ACH_SOLVED_ONCE, true)
-
-        // 2. "Решить не более чем за 5 минут" (5 минут = 300 секунд)
+        if (timerSeconds <= 60) {
+            editor.putBoolean(KEY_ACH_SOLVED_UNDER_1_MIN, true)
+        }
         if (timerSeconds <= 300) {
             editor.putBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, true)
         }
-
-        // 3. "Решить не более чем за 50 шагов"
         if (stepCount <= 50) {
             editor.putBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, true)
         }
-
         editor.apply()
-        if(prefs.getBoolean(KEY_ACH_SOLVED_ONCE, true)
-            or prefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, true)
-            or prefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, true))
-        {
-            Toast.makeText(this, "Победа за ${timerSeconds} секунд и ${stepCount} шагов! Новые достижения!.", Toast.LENGTH_LONG).show()
+
+        val newlyUnlockedAchievements = mutableListOf<String>()
+
+        if (!hadSolvedOnce) {
+            newlyUnlockedAchievements.add(getString(R.string.ach_solved_once))
         }
-        else{Toast.makeText(this, "Победа за ${timerSeconds} секунд и ${stepCount} шагов!", Toast.LENGTH_LONG).show()}
+        if (timerSeconds <= 60 && !hadSolvedUnder1Min) {
+            newlyUnlockedAchievements.add(getString(R.string.ach_solved_under_1_min))
+        }
+        if (timerSeconds <= 300 && !hadSolvedUnder5Min) {
+            newlyUnlockedAchievements.add(getString(R.string.ach_solved_under_5_min))
+        }
+        if (stepCount <= 50 && !hadSolvedUnder50Steps) {
+            newlyUnlockedAchievements.add(getString(R.string.ach_solved_under_50_steps))
+        }
+
+        var finalMessage = getString(R.string.win_message, timerSeconds, stepCount)
+
+        if (newlyUnlockedAchievements.isNotEmpty()) {
+            finalMessage += "\n${getString(R.string.new_achievements)} ${newlyUnlockedAchievements.joinToString(", ")}"
+        }
+
+        Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show()
     }
+
     private fun checkAndUnlockStepAchievements() {
-        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
-        if (stepCount >= 100 && !prefs.getBoolean(KEY_ACH_100_STEPS, false)) {
-            prefs.edit().putBoolean(KEY_ACH_100_STEPS, true).apply()
-            Toast.makeText(this, "Достижение: 100 шагов!", Toast.LENGTH_SHORT).show()
+        if (stepCount >= 100 && !sharedPrefs.getBoolean(KEY_ACH_100_STEPS, false)) {
+            sharedPrefs.edit().putBoolean(KEY_ACH_100_STEPS, true).apply()
+            Toast.makeText(this, getString(R.string.toast_100_step), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -303,13 +383,11 @@ class MainActivity : AppCompatActivity() {
         val listView = dialogView.findViewById<ListView>(R.id.listViewAchievements)
         val closeButton = dialogView.findViewById<Button>(R.id.buttonCloseAchievements)
 
-        val prefs = getSharedPreferences(ACHIEVEMENTS_PREFS, MODE_PRIVATE)
         val achievementItems = mutableListOf<AchievementItem>()
-        achievementItems.add(AchievementItem("Решить головоломку", prefs.getBoolean(KEY_ACH_SOLVED_ONCE, false)))
-        achievementItems.add(AchievementItem("Решить не более чем за 5 минут", prefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, false)))
-        achievementItems.add(AchievementItem("Сделать 100 шагов", prefs.getBoolean(KEY_ACH_100_STEPS, false)))
-        achievementItems.add(AchievementItem("Решить не более чем за 50 шагов", prefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, false)))
-        // Добавьте другие достижения по аналогии
+        achievementItems.add(AchievementItem(getString(R.string.ach_solved_once), sharedPrefs.getBoolean(KEY_ACH_SOLVED_ONCE, false)))
+        achievementItems.add(AchievementItem(getString(R.string.ach_solved_under_5_min), sharedPrefs.getBoolean(KEY_ACH_SOLVED_UNDER_5_MIN, false)))
+        achievementItems.add(AchievementItem(getString(R.string.ach_100_steps), sharedPrefs.getBoolean(KEY_ACH_100_STEPS, false)))
+        achievementItems.add(AchievementItem(getString(R.string.ach_solved_under_50_steps), sharedPrefs.getBoolean(KEY_ACH_SOLVED_UNDER_50_STEPS, false)))
 
         val adapter = AchievementsAdapter(this, achievementItems)
         listView.adapter = adapter
@@ -317,8 +395,7 @@ class MainActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
-
-        // Для полупрозрачности и отсутствия стандартного фона диалога
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         closeButton.setOnClickListener {

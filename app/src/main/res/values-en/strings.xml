@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fifteens</string>
+    <string name="toast_pause">Game paused</string>
+    <string name="toast_resume">Game resume</string>
+    <string name="toast_100_step">Achiev\' 100 steps!</string>
+    <string name="pause_game">Pause</string>
+    <string name="resume_game">Resume</string>
+    <string name="steps_prefix">Steps: %1$d</string>
+    <string name="restart">Restart</string>
+    <string name="achievements">Achievements</string>
+    <string name="ach_solved_once">Solve mind game once</string>
+    <string name="ach_solved_under_5_min">Solve not more than 5 minutes</string>
+    <string name="ach_solved_under_50_steps">Solve not more than 50 steps</string>
+    <string name="ach_100_steps">Get 100 steps</string>
+    <string name="ach_solved_under_1_min">Solve not more than 1 minute</string>
+    <string name="win_message">Victory with %1$d s. and %2$d steps!</string>
+    <string name="new_achievements">New achievements:</string>
+    <string name="close_button">Close</string>
+    <string name="login">Login</string>
+    <string name="registration">Registration</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm your password</string>
+    <string name="register">Sign In</string>
+    <string name="already_have_account">Already have account? Login</string>
+    <string name="no_account_yet">No acc yet? Sign in</string>
+    <string name="error_empty_field">Field unable to be empty</string>
+    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_password_too_short">Password should be more than 6 symbols</string>
+    <string name="error_passwords_do_not_match">Passwords don\'t match</string>
+    <string name="registration_successful">Registration succesful</string>
+    <string name="login_failed">Incorrect email or password</string>
+</resources>

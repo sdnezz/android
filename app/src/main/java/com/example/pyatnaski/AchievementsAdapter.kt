@@ -1,4 +1,4 @@
-package com.example.pyatnaski // Или ваш актуальный пакет
+package com.example.pyatnaski
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-// import androidx.compose.ui.layout.layout // <-- ЭТУ СТРОКУ НУЖНО УДАЛИТЬ
 
 data class AchievementItem(val name: String, val isUnlocked: Boolean)
 
@@ -16,7 +15,7 @@ class AchievementsAdapter(context: Context, private val achievements: List<Achie
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.list_item_achievement, parent, false) // Вот здесь используется list_item_achievement.xml
+            .inflate(R.layout.list_item_achievement, parent, false)
 
         val achievement = achievements[position]
         val nameTextView = view.findViewById<TextView>(R.id.textViewAchievementName)

@@ -1,16 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Pyatnaski" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    <!-- Dark application theme. -->
+    <style name="Theme.Pyatnaski" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="mainBackgroundColor">@color/background_main_dark</item>
+        <item name="tileBackgroundColor">@color/dark_background</item>
+        <item name="tileStrokeColor">@color/orange_tile_stroke</item>
+        <item name="tileTextColor">@color/text_tile_orange</item>
+        <item name="buttonTextColor">@color/button_orange_text</item>
+        <item name="secondaryTextColor">@color/time_steps_text</item>
+        <item name="dialogBackgroundColor">@color/dark_background</item>
+        <item name="dialogTextColor">@color/white</item>
+    </style>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_main_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Pyatnaski</item>
+    </style>
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/scale_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/scale_fade_out</item>
     </style>
 </resources>

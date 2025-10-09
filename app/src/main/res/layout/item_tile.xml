@@ -10,7 +10,7 @@
     android:foreground="@drawable/tile_ripple_effect"
     android:gravity="center"
     android:padding="10dp"
-    android:textColor="#FFE17A"
+    android:textColor="?attr/tileTextColor"
     android:textSize="34sp"
     android:textStyle="bold"
     app:backgroundTint="@null"

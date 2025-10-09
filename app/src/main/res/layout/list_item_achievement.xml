@@ -12,7 +12,7 @@
         android:layout_weight="1"
         android:text="Название достижения"
         android:textSize="16sp"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/dialogTextColor"
         android:textStyle="bold"/>
 
     <ImageView

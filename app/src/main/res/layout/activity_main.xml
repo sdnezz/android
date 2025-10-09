@@ -5,10 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1D1D1D"
-    android:foreground="@drawable/tile_ripple_effect"
+    android:background="?attr/mainBackgroundColor"
     tools:context=".MainActivity">
-
+    <!--    android:foreground="@drawable/tile_ripple_effect"-->
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridLayout_gameBoard"
         android:layout_width="0dp"
@@ -24,7 +23,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:rowCount="4"
         tools:itemCount="16"
-        tools:listitem="@layout/item_tile" />
+        tools:listitem="@layout/item_tile">
+
+    </androidx.gridlayout.widget.GridLayout>
 
     <Button
         android:id="@+id/button_start"
@@ -34,15 +35,15 @@
         android:clickable="true"
         android:contextClickable="true"
         android:foreground="@drawable/tile_ripple_effect"
-        android:text="Начать заново"
+        android:text="@string/restart"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="#373737"
+        android:textColor="?attr/dialogTextColor"
         android:textColorHighlight="#FFFFFF"
         android:textColorHint="#FFFFFF"
         android:textStyle="bold"
         android:typeface="normal"
-        app:backgroundTint="#FFC107"
+        app:backgroundTint="?attr/tileStrokeColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,31 +67,31 @@
             android:id="@+id/toggleButton_pause"
             android:layout_width="175dp"
             android:layout_height="55dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
             android:foreground="@drawable/tile_ripple_effect"
             android:text="ToggleButton"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#FFC107"
-            android:textOff="Пауза"
-            android:textOn="Возобновить"
+            android:textColor="?attr/tileStrokeColor"
+            android:textOff="@string/pause_game"
+            android:textOn="@string/resume_game"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/button_achievements"
-            android:layout_width="175dp"
+            android:layout_width="185dp"
             android:layout_height="55dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
             android:contextClickable="true"
             android:foreground="@drawable/tile_ripple_effect"
-            android:text="Достижения"
+            android:text="@string/achievements"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#FFC107"
+            android:textColor="?attr/tileStrokeColor"
             android:textColorHighlight="#FFFFFF"
             android:textColorHint="#FFFFFF"
             android:textStyle="bold"
@@ -114,7 +115,7 @@
             android:text="00:00:00"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#9E9E9E"
+            android:textColor="?attr/secondaryTextColor"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -132,7 +133,7 @@
             android:text="Шагов: 1000"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#9E9E9E"
+            android:textColor="?attr/secondaryTextColor"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -140,6 +141,82 @@
             app:layout_constraintHorizontal_bias="0.938"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/imageView_gif"
+        android:layout_width="174dp"
+        android:layout_height="143dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/thinking_gif" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="104dp"
+        android:layout_height="161dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
+        app:layout_constraintEnd_toStartOf="@+id/imageView_gif"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.63">
+
+        <Button
+            android:id="@+id/button_lang_switch"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="0dp"
+            android:background="@drawable/language_switch_image"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:foreground="@drawable/tile_ripple_effect"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="?attr/tileStrokeColor"
+            android:textColorHighlight="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:textStyle="bold"
+            android:typeface="normal"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="104dp"
+        android:layout_height="161dp"
+        android:layout_marginBottom="27dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView_gif"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <ImageButton
+            android:id="@+id/day_night_switch"
+            android:layout_width="75dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="0dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.842"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.025"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/night_mode" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
