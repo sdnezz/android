@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/mainBackgroundColor"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="-12dp">
     <!--    android:foreground="@drawable/tile_ripple_effect"-->
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridLayout_gameBoard"
@@ -67,7 +69,8 @@
             android:id="@+id/toggleButton_pause"
             android:layout_width="175dp"
             android:layout_height="55dp"
-            android:layout_margin="5dp"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
             android:foreground="@drawable/tile_ripple_effect"
@@ -81,9 +84,9 @@
 
         <Button
             android:id="@+id/button_achievements"
-            android:layout_width="185dp"
+            android:layout_width="195dp"
             android:layout_height="55dp"
-            android:layout_margin="5dp"
+            android:layout_margin="2dp"
             android:background="@drawable/tile_default_background"
             android:clickable="true"
             android:contextClickable="true"
@@ -149,19 +152,22 @@
         android:layout_height="143dp"
         app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.373"
         app:srcCompat="@drawable/thinking_gif" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="104dp"
-        android:layout_height="161dp"
+        android:id="@+id/constraintLayout2"
+        android:layout_width="105dp"
+        android:layout_height="125dp"
         app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
         app:layout_constraintEnd_toStartOf="@+id/imageView_gif"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.63">
+        app:layout_constraintVertical_bias="0.311">
 
         <Button
             android:id="@+id/button_lang_switch"
@@ -195,10 +201,10 @@
         android:layout_marginBottom="27dp"
         app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintStart_toEndOf="@+id/imageView_gif"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.739">
 
         <ImageButton
             android:id="@+id/day_night_switch"
@@ -218,5 +224,30 @@
             tools:ignore="ContentDescription"
             tools:src="@drawable/night_mode" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button_leaders"
+        android:layout_width="143dp"
+        android:layout_height="50dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/tile_default_background"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:foreground="@drawable/tile_ripple_effect"
+        android:text="@string/leaders"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="?attr/tileStrokeColor"
+        android:textColorHighlight="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout_gameBoard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintVertical_bias="0.72" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

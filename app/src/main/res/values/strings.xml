@@ -30,4 +30,7 @@
     <string name="error_passwords_do_not_match">Пароли не совпадают</string>
     <string name="registration_successful">Регистрация прошла успешно!</string>
     <string name="login_failed">Неверный email или пароль</string>
+    <string name="leaders">Лидеры</string>
+    <string name="steps_suffix">%1$d ш.</string>
+    <string name="seconds_suffix">%1$d сек.</string>
 </resources>

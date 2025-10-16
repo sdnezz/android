@@ -16,9 +16,14 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.gridlayout.widget.GridLayout
 import com.bumptech.glide.Glide
+import com.example.pyatnaski.ui.theme.PyatnaskiTheme
 
 
 class MainActivity : AppCompatActivity() {
@@ -124,6 +129,69 @@ class MainActivity : AppCompatActivity() {
         themeSwitchButton.setOnClickListener {
             toggleTheme()
         }
+        val leadersButton = findViewById<Button>(R.id.button_leaders)
+        leadersButton.setOnClickListener { showLeadersDialog() }
+    }
+
+    private fun showLeadersDialog() {
+        // Пока используем тестовые данные. В будущем вы будете загружать их, например, из SharedPreferences.
+        val fakeLeaders = listOf(
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85),
+            LeaderboardEntry("user@example.com", 120, 340),
+            LeaderboardEntry("player_two@game.com", 95, 210),
+            LeaderboardEntry("fifteen_master@pro.org", 45, 85)
+        ).sortedBy { it.steps } // Сортируем по количеству шагов для примера
+
+        // Создаем диалог, как и для достижений
+        val dialog = AlertDialog.Builder(this)
+            .create()
+
+        // ВАЖНО: Вместо setView() с XML, мы используем setContent() с Compose
+        dialog.setView(
+            androidx.compose.ui.platform.ComposeView(this).apply {
+                // Говорим ComposeView, что она не должна управлять своим жизненным циклом сама
+                setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    // Оборачиваем наш UI в нашу новую тему
+                    PyatnaskiTheme {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LeaderboardDialogContent(leaders = fakeLeaders) {
+                                // Действие при нажатии на кнопку "Закрыть" в Compose
+                                dialog.dismiss()
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        // Убираем стандартный фон диалога, т.к. у нас свой фон в Compose
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
     }
 
     private fun toggleTheme() {

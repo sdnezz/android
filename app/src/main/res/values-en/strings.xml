@@ -31,4 +31,7 @@
     <string name="error_passwords_do_not_match">Passwords don\'t match</string>
     <string name="registration_successful">Registration succesful</string>
     <string name="login_failed">Incorrect email or password</string>
+    <string name="leaders">Leaders</string>
+    <string name="steps_suffix">%1$d st.</string>
+    <string name="seconds_suffix">%1$d sec.</string>
 </resources>
