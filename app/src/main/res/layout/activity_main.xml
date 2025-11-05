@@ -193,6 +193,30 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+        <Button
+            android:id="@+id/buttonContact"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="0dp"
+            android:background="@drawable/ic_contact_support"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:foreground="@drawable/tile_ripple_effect"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="?attr/tileStrokeColor"
+            android:textColorHighlight="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:textStyle="bold"
+            android:typeface="normal"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/button_lang_switch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -223,6 +247,7 @@
             app:layout_constraintVertical_bias="0.025"
             tools:ignore="ContentDescription"
             tools:src="@drawable/night_mode" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button

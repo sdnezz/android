@@ -1,6 +1,8 @@
 package com.example.pyatnaski
 
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -33,11 +35,14 @@ class MainActivity : AppCompatActivity() {
 //    private val PREFS_NAME = "ThemePrefs"
 //    private val KEY_THEME = "app_theme_mode"
     private lateinit var languageButton: Button
+    private lateinit var contactButton: Button
     private lateinit var thinking_gif: ImageView
     private lateinit var gameBoardLayout: GridLayout
     private val tiles = mutableListOf<Button>()
     private var emptyTile: Button? = null
     private val TILE_COUNT = 4
+
+
 
     private lateinit var startButton: Button
 
@@ -131,10 +136,24 @@ class MainActivity : AppCompatActivity() {
         }
         val leadersButton = findViewById<Button>(R.id.button_leaders)
         leadersButton.setOnClickListener { showLeadersDialog() }
+
+        contactButton = findViewById(R.id.buttonContact)
+        contactButton.setOnClickListener {
+            sendEmailToDeveloper()
+        }
+    }
+
+    private fun sendEmailToDeveloper() {
+        // Создаем неявный Intent с действием "отправить кому-то"
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("twinknezz@gmail.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Отзыв о приложении 'Пятнашки'")
+        }
+        startActivity(intent)
     }
 
     private fun showLeadersDialog() {
-        // Пока используем тестовые данные. В будущем вы будете загружать их, например, из SharedPreferences.
         val fakeLeaders = listOf(
             LeaderboardEntry("user@example.com", 120, 340),
             LeaderboardEntry("player_two@game.com", 95, 210),
@@ -160,26 +179,21 @@ class MainActivity : AppCompatActivity() {
             LeaderboardEntry("user@example.com", 120, 340),
             LeaderboardEntry("player_two@game.com", 95, 210),
             LeaderboardEntry("fifteen_master@pro.org", 45, 85)
-        ).sortedBy { it.steps } // Сортируем по количеству шагов для примера
+        ).sortedBy { it.timeInSeconds }
 
-        // Создаем диалог, как и для достижений
         val dialog = AlertDialog.Builder(this)
             .create()
 
-        // ВАЖНО: Вместо setView() с XML, мы используем setContent() с Compose
         dialog.setView(
             androidx.compose.ui.platform.ComposeView(this).apply {
-                // Говорим ComposeView, что она не должна управлять своим жизненным циклом сама
                 setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    // Оборачиваем наш UI в нашу новую тему
                     PyatnaskiTheme {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             LeaderboardDialogContent(leaders = fakeLeaders) {
-                                // Действие при нажатии на кнопку "Закрыть" в Compose
                                 dialog.dismiss()
                             }
                         }
@@ -188,7 +202,6 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        // Убираем стандартный фон диалога, т.к. у нас свой фон в Compose
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         dialog.show()
@@ -351,7 +364,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun resumeGame() {
         isGamePaused = false
-        if (isTimerRunning && hasGameStartedSinceShuffle) { // Возобновляем таймер, если он был активен и игра уже началась
+        if (isTimerRunning && hasGameStartedSinceShuffle) {
             timerHandler.postDelayed(timerRunnable, 1000)
         }
         setGameBoardEnabled(true)
